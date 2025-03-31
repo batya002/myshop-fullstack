@@ -1,0 +1,1 @@
+export { validationProduct } from "./validationProduct"
