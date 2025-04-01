@@ -1,1 +1,1 @@
-export { validationUser } from "./validationUser"
+export { validationSignIn, validationSignUp } from "./validationUser"

@@ -11,23 +11,23 @@ import {
   InputOTPSlot,
 } from "../ui";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { validationUser } from "./validation";
+import { validationSignUp } from "./validation";
 import { sendConfirmationCode } from "./services";
-import { FormUser } from "./interface/userForm";
+import { SignUpFrom } from "./interface/userForm";
 import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function SignUp() {
-  const [userData, setUserData] = useState<FormUser | null>(null);
+  const [userData, setUserData] = useState<SignUpFrom | null>(null);
   const [code, setCode] = useState<string>("");
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
   const [isCodeSent, setIsCodeSent] = useState<boolean>(false);
   const [timer, setTimer] = useState<number>(60);
   const navigate = useNavigate();
 
-  const form: UseFormReturn<FormUser> = useForm<FormUser>({
-    resolver: yupResolver(validationUser),
+  const form: UseFormReturn<SignUpFrom> = useForm<SignUpFrom>({
+    resolver: yupResolver(validationSignUp),
     defaultValues: {
       name: "",
       email: "",
@@ -42,7 +42,7 @@ export default function SignUp() {
     return () => clearInterval(interval);
   }, [isCodeSent, timer]);
 
-  const sendCode = async (data: FormUser) => {
+  const sendCode = async (data: SignUpFrom) => {
     setUserData(data);
     const generated = await sendConfirmationCode(data.email);
     if (generated) {
@@ -123,7 +123,11 @@ export default function SignUp() {
                   render={({ field }) => (
                     <FormItem className="max-w-[15rem]">
                       <FormControl>
-                        <Input {...field} placeholder="Enter your password" />
+                        <Input
+                          {...field}
+                          type="password"
+                          placeholder="Enter your password"
+                        />
                       </FormControl>
                       {form.formState.errors.password && (
                         <p className="text-red-500 text-sm">

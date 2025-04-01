@@ -13,5 +13,9 @@ app.use(cros({ origin: "http://localhost:5173" }));
 app.use("/api", userRouter, productRouter);
 
 app
-  .listen(PORT, () => console.log(`Create server in ${PORT} port`))
+  .listen(PORT, () =>
+    console.log(
+      `Create server in ${PORT} port link to http://localhost:${PORT}/api/`
+    )
+  )
   .on("error", (err) => console.error(`Error in runig server: ${err.message}`));
