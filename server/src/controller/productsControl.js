@@ -36,7 +36,14 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ error: "not all fields are filled in" });
     }
 
-    let newProduct = { id: uuidv4(), imagePath, title, price, description };
+    let newProduct = {
+      id: uuidv4(),
+      imagePath,
+      title,
+      category,
+      price,
+      description,
+    };
 
     products.push(newProduct);
 

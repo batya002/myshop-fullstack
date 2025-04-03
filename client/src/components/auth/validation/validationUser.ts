@@ -19,5 +19,5 @@ const validationUser = yup
 	})
 	.required();
 
-export const validationSignIn = validationUser.pick(["name", "password", "confirmPassword"])
+export const validationSignIn = validationUser.pick(["email", "password", "confirmPassword"])
 export const validationSignUp = validationUser.pick(["name", "email", "password"]);

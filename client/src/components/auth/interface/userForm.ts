@@ -5,6 +5,6 @@ export interface SignUpFrom {
 }
 
 export interface SignInForm {
-  name: string
+  email: string
   password: string
 }

@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { FormProvider, useForm, UseFormReturn } from "react-hook-form";
 import {
@@ -16,7 +15,7 @@ import { sendConfirmationCode } from "./services";
 import { SignUpFrom } from "./interface/userForm";
 import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
+import axiosInstance from "@/services/axiosInstance";
 
 export default function SignUp() {
   const [userData, setUserData] = useState<SignUpFrom | null>(null);
@@ -28,11 +27,7 @@ export default function SignUp() {
 
   const form: UseFormReturn<SignUpFrom> = useForm<SignUpFrom>({
     resolver: yupResolver(validationSignUp),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
+    defaultValues: { name: "", email: "", password: "" },
     mode: "onBlur",
   });
 
@@ -42,7 +37,26 @@ export default function SignUp() {
     return () => clearInterval(interval);
   }, [isCodeSent, timer]);
 
+  const checkUserExists = async (name: string, email: string) => {
+    try {
+      const { data } = await axiosInstance.get(
+        `/users/?name=${name}&email=${email}`
+      );
+      return (
+        Array.isArray(data) &&
+        data.some((user) => user.name === name || user.email === email)
+      );
+    } catch (error) {
+      console.error("Error checking user existence:", error);
+      return false;
+    }
+  };
+
   const sendCode = async (data: SignUpFrom) => {
+    if (await checkUserExists(data.name, data.email)) {
+      toast.error("Пользователь уже существует!");
+      return;
+    }
     setUserData(data);
     const generated = await sendConfirmationCode(data.email);
     if (generated) {
@@ -53,17 +67,16 @@ export default function SignUp() {
   };
 
   const verifyCode = async () => {
-    if (code !== generatedCode) {
-      toast.error("Incorrect code. Try again.");
-      return;
-    }
-    if (!userData) {
-      toast.error("User data is missing!");
+    if (code !== generatedCode || !userData) {
+      toast.error(
+        code !== generatedCode
+          ? "Incorrect code. Try again."
+          : "User data is missing!"
+      );
       return;
     }
     try {
-      await axios.post("http://localhost:3000/api/users", userData);
-      console.log("User data submitted:", userData);
+      await axiosInstance.post("/users", userData);
       toast.success("Signup successful!");
       navigate("/home");
     } catch (err) {
@@ -85,58 +98,29 @@ export default function SignUp() {
                 autoComplete="off"
                 className="flex flex-col gap-y-4"
               >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="max-w-[15rem]">
-                      <FormControl>
-                        <Input {...field} placeholder="Enter your name" />
-                      </FormControl>
-                      {form.formState.errors.name && (
-                        <p className="text-red-500 text-sm">
-                          {form.formState.errors.name.message}
-                        </p>
-                      )}
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="max-w-[15rem]">
-                      <FormControl>
-                        <Input {...field} placeholder="Enter your email" />
-                      </FormControl>
-                      {form.formState.errors.email && (
-                        <p className="text-red-500 text-sm">
-                          {form.formState.errors.email.message}
-                        </p>
-                      )}
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem className="max-w-[15rem]">
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="password"
-                          placeholder="Enter your password"
-                        />
-                      </FormControl>
-                      {form.formState.errors.password && (
-                        <p className="text-red-500 text-sm">
-                          {form.formState.errors.password.message}
-                        </p>
-                      )}
-                    </FormItem>
-                  )}
-                />
+                {(["name", "email", "password"] as const).map((field) => (
+                  <FormField
+                    key={field}
+                    control={form.control}
+                    name={field}
+                    render={({ field: inputField }) => (
+                      <FormItem className="max-w-[15rem]">
+                        <FormControl>
+                          <Input
+                            {...inputField}
+                            placeholder={`Enter your ${field}`}
+                            type={field === "password" ? "password" : "text"}
+                          />
+                        </FormControl>
+                        {form.formState.errors[field] && (
+                          <p className="text-red-500 text-sm">
+                            {form.formState.errors[field]?.message}
+                          </p>
+                        )}
+                      </FormItem>
+                    )}
+                  />
+                ))}
                 <Button type="submit" className="block mx-auto mt-4">
                   Submit
                 </Button>

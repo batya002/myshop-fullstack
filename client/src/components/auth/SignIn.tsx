@@ -4,15 +4,15 @@ import { SignInForm } from "./interface/userForm";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { validationSignIn } from "./validation";
 import { Button, FormControl, FormField, FormItem, Input } from "../ui";
-import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
+import axiosInstance from "@/services/axiosInstance";
 
 export default function SignIn() {
   const form: UseFormReturn<SignInForm & { confirmPassword: string }> = useForm(
     {
       resolver: yupResolver(validationSignIn),
       defaultValues: {
-        name: "",
+        email: "",
         password: "",
         confirmPassword: "",
       },
@@ -22,18 +22,18 @@ export default function SignIn() {
 
   const onSubmit = async (data: SignInForm) => {
     try {
-      const response = await axios.get(
-        `http://localhost:3000/api/users/?name=${data.name}`
+      const response = await axiosInstance.get(
+        `/users/?name=${data.email}`
       );
 
-      if (response.status == 404 || response.status == 500) {
+      if (!response) {
         throw new Error("User not found!");
       }
 
-      console.log();
+      console.log(response.data);
     } catch (err) {
       console.error(err);
-      toast.error("User not found!")
+      toast.error("User not found!");
     }
   };
 
@@ -50,12 +50,17 @@ export default function SignIn() {
             >
               <FormField
                 control={form.control}
-                name="name"
+                name="email"
                 render={({ field }) => (
                   <FormItem className="max-w-[15rem]">
                     <FormControl>
                       <Input {...field} placeholder="Enter your name" />
                     </FormControl>
+                    {form.formState.errors.email && (
+                      <p className="text-red-500 text-sm">
+                        {form.formState.errors.email.message}
+                      </p>
+                    )}
                   </FormItem>
                 )}
               />
@@ -71,6 +76,11 @@ export default function SignIn() {
                         placeholder="Enter your password"
                       />
                     </FormControl>
+                    {form.formState.errors.password && (
+                      <p className="text-red-500 text-sm">
+                        {form.formState.errors.password.message}
+                      </p>
+                    )}
                   </FormItem>
                 )}
               />
@@ -86,6 +96,11 @@ export default function SignIn() {
                         placeholder="Confirm your password"
                       />
                     </FormControl>
+                    {form.formState.errors.confirmPassword && (
+                      <p className="text-red-500 text-sm">
+                        {form.formState.errors.confirmPassword.message}
+                      </p>
+                    )}
                   </FormItem>
                 )}
               />

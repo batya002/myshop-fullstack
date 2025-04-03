@@ -28,18 +28,18 @@ export default function Products() {
       <AddProduct />
       <section className="mt-4">
         <div className="container max-w-section">
-          <ul>
+          <ul className="flex justify-between items-center">
             {products.map((product) => {
               const { id, imagePath, title, category, price, description } =
                 product;
 
               return (
-                <li key={id}>
-                  <img src={imagePath} alt={title} />
-                  <h3>{title}</h3>
-                  <p>{category}</p>
-                  <p>{price}</p>
-                  <p>{description}</p>
+                <li key={id} className="max-w-[25rem]">
+                  <img src={imagePath} alt={title} className="w-full" />
+                  <h3 className="text-3xl font-bold truncate">{title}</h3>
+                  <p className="text-lg font-medium">{category}</p>
+                  <p className="text-xl text-green-500">{price}</p>
+                  <p className="max-w-[25rem] truncate">{description}</p>
                 </li>
               );
             })}
