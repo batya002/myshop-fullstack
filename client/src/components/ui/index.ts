@@ -6,3 +6,4 @@ export { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, } from "./s
 export { Switch } from "./switch"
 export { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "./table"
 export { Textarea } from "./textarea"
+export { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "./dialog"

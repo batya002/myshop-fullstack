@@ -72,7 +72,7 @@ export const deleteProduct = async (req, res) => {
 };
 
 export const editProduct = async (req, res) => {
-  const productId = req.params;
+  const productId = req.params.id;
 
   try {
     let product = products.find((p) => p.id === productId);

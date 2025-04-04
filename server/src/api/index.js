@@ -10,7 +10,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cros({ origin: "http://localhost:5173" }));
-app.use("/api", userRouter, productRouter);
+app.use("/api", userRouter);
+app.use("/api", productRouter);
 
 app
   .listen(PORT, () =>
