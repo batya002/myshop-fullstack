@@ -58,11 +58,11 @@ export const deleteProduct = async (req, res) => {
   try {
     const productId = products.findIndex((p) => p.id === req.params.id);
 
-    if (!productId) {
+    if (productId === -1) {
       return res.status(404).json({ error: "product not found" });
     }
 
-    users.splice(productId, 1);
+    products.splice(productId, 1);
 
     res.status(204).send();
   } catch (err) {

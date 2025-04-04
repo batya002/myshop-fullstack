@@ -47,8 +47,9 @@ export default function Products() {
 
   const deleteProduct = async (id: string) => {
     try {
-      await axiosInstance.delete(`/products/:${id}`);
-      console.log(id);
+      await axiosInstance.delete(`/products/${id}`);
+
+      getProducts()
     } catch (err) {
       console.error(err);
     }
